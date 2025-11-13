@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./FactibilidadForm.module.css";
 
-export default function FactibilidadForm({ onSubmit }) {
+export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
   const [sessionId, setSessionId] = useState("sess-bookings1-005");
   const [projectName, setProjectName] = useState("Licenciamiento Bookings");
   const [clientName, setClientName] = useState("Comercial Andina");
@@ -12,6 +13,10 @@ export default function FactibilidadForm({ onSubmit }) {
   const [objective, setObjective] = useState(
     "Necesito cotizar y habilitar Teams Audio Conferencing para 20 usuarios en región EC. Producto: reservas/agenda, vendor Microsoft, licencia por usuario, facturación mensual."
   );
+
+  const [useKb, setUseKb] = useState(true);
+  const [generateQa, setGenerateQa] = useState(false);
+  const [docxMode, setDocxMode] = useState("apa");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,101 +33,184 @@ export default function FactibilidadForm({ onSubmit }) {
     onSubmit({
       sessionId,
       userInput: objective,
-      slots
+      slots,
+      useKb,
+      generateQa,
+      docxMode
     });
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 rounded-lg border p-4 shadow-sm"
-    >
-      <h2 className="text-lg font-semibold">Nueva factibilidad técnica</h2>
+    <form id="fact-form" className={styles.card} onSubmit={handleSubmit}>
+      <div className={styles.cardHeader}>
+        <div>
+          <h2 className={styles.cardTitle}>Nueva factibilidad técnica</h2>
+          <p className={styles.cardSubtitle}>
+            Define los datos mínimos y genera el documento con un clic.
+          </p>
+        </div>
+        <span className={styles.badge}>Multiagentes</span>
+      </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">Session ID</label>
+      <div className={styles.grid}>
+        <div className={styles.fieldGroup} id="field-session">
+          <label className={styles.label}>Session ID</label>
           <input
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
             required
           />
-          <span className="mt-1 text-xs text-gray-500">
-            Identificador para reusar la misma sesión.
-          </span>
+          <p className={styles.helpText}>
+            Usa el mismo ID si quieres regenerar la factibilidad para el mismo
+            caso.
+          </p>
         </div>
 
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">Nombre del proyecto</label>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>Nombre del proyecto</label>
           <input
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             required
+            placeholder="Ej: Sistema de gestión empresarial"
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">Cliente</label>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>Cliente</label>
           <input
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
+            placeholder="Nombre de la empresa"
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">Correo de contacto</label>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>Correo de contacto</label>
           <input
             type="email"
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             required
+            placeholder="contacto@empresa.com"
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">Región</label>
+        <div className={styles.fieldGroupSmall}>
+          <label className={styles.label}>Región</label>
           <input
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={region}
             onChange={(e) => setRegion(e.target.value)}
+            placeholder="EC, US, etc."
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="mb-1 text-sm font-medium">
-            Cantidad (ej. usuarios)
-          </label>
+        <div className={styles.fieldGroupSmall}>
+          <label className={styles.label}>Cantidad (ej. usuarios)</label>
           <input
             type="number"
             min={1}
-            className="rounded border px-2 py-1 text-sm"
+            className={styles.input}
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <label className="mb-1 text-sm font-medium">Descripción / Requerimiento</label>
+      <div className={styles.fieldGroup} id="field-objective">
+        <label className={styles.label}>
+          Descripción / Requerimiento del cliente
+        </label>
         <textarea
-          className="min-h-[100px] rounded border px-2 py-1 text-sm"
+          className={`${styles.input} ${styles.textarea}`}
           value={objective}
           onChange={(e) => setObjective(e.target.value)}
           required
+          placeholder="Describe aquí el requerimiento completo del cliente, incluyendo productos, servicios, alcance, región, cantidad de usuarios, etc."
         />
+        <p className={styles.helpText}>
+          Aquí puedes pegar el texto que el cliente te envió (correo,
+          WhatsApp, etc.). El agente Normalizer lo procesará automáticamente.
+        </p>
       </div>
 
-      <button
-        type="submit"
-        className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-      >
-        Generar factibilidad
-      </button>
+      <div className={styles.advancedBox}>
+        <p className={styles.advancedTitle}>Opciones avanzadas</p>
+
+        <div className={styles.toggleRow}>
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={useKb}
+              onChange={(e) => setUseKb(e.target.checked)}
+            />
+            <span className={styles.toggleLabelText}>
+              Usar catálogo de productos
+            </span>
+          </label>
+
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={generateQa}
+              onChange={(e) => setGenerateQa(e.target.checked)}
+            />
+            <span className={styles.toggleLabelText}>
+              Habilitar preguntas de QA
+            </span>
+          </label>
+        </div>
+
+        <div className={styles.docxModeRow}>
+          <span className={styles.toggleLabelText}>Formato DOCX:</span>
+          <button
+            type="button"
+            className={`${styles.docxOption} ${
+              docxMode === "apa" ? styles.docxOptionActive : ""
+            }`}
+            onClick={() => setDocxMode("apa")}
+          >
+            APA (sin plantilla)
+          </button>
+          <button
+            type="button"
+            className={`${styles.docxOption} ${
+              docxMode === "corp" ? styles.docxOptionActive : ""
+            }`}
+            onClick={() => setDocxMode("corp")}
+          >
+            Plantilla corporativa
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.actionsRow}>
+        <button
+          type="submit"
+          className={styles.primaryButton}
+          id="btn-generar"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span className={styles.loader}></span>
+              <span>Generando factibilidad...</span>
+            </>
+          ) : (
+            "Generar factibilidad"
+          )}
+        </button>
+        <span className={styles.actionsHint}>
+          Se ejecutarán los agentes de Normalize, Products, Scope, Pricing y QA
+          según las opciones seleccionadas.
+        </span>
+      </div>
     </form>
   );
 }

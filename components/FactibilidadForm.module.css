@@ -1,0 +1,253 @@
+.card {
+  background: radial-gradient(circle at top left, #0ea5e9 0, #020617 55%, #020617 100%);
+  border-radius: 18px;
+  padding: 1.75rem;
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.55),
+    0 0 0 1px rgba(148, 163, 184, 0.3);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.cardSubtitle {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
+.badge {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  color: #e5e7eb;
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldGroupSmall {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #e2e8f0;
+  margin-bottom: 0.25rem;
+}
+
+.input {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.helpText {
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: #cbd5f5;
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border: none;
+  padding: 0.45rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow:
+    0 12px 30px rgba(22, 163, 74, 0.5),
+    0 0 0 1px rgba(21, 128, 61, 0.4);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow:
+    0 16px 40px rgba(22, 163, 74, 0.6),
+    0 0 0 1px rgba(21, 128, 61, 0.5);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+  box-shadow:
+    0 6px 20px rgba(22, 163, 74, 0.45),
+    0 0 0 1px rgba(21, 128, 61, 0.5);
+}
+
+.primaryButton[disabled] {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+  box-shadow:
+    0 6px 18px rgba(15, 23, 42, 0.7),
+    0 0 0 1px rgba(148, 163, 184, 0.4);
+}
+
+.actionsHint {
+  font-size: 0.8rem;
+  color: #cbd5f5;
+  max-width: 360px;
+}
+
+/* Opciones avanzadas */
+
+.advancedBox {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(148, 163, 184, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.advancedTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #e2e8f0;
+}
+
+.toggleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.75);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.toggle input {
+  accent-color: #22c55e;
+}
+
+.toggleLabelText {
+  font-size: 0.75rem;
+}
+
+.docxModeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.docxOption {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 0.25rem 0.7rem;
+  font-size: 0.76rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.docxOptionActive {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border-color: #0ea5e9;
+  color: #0f172a;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .card {
+    padding: 1.25rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actionsRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actionsHint {
+    max-width: none;
+  }
+}

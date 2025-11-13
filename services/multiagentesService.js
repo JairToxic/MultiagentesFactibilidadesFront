@@ -6,8 +6,8 @@ export async function runFullOrchestration({
   userInput,
   slots,
   useKb = true,
-  askMode = "none",      // así no te manda QA si no quieres
-  debugFull = true       // para ver todos los slots en la respuesta
+  askMode = "none",
+  debugFull = true
 }) {
   const res = await fetch(`${API_BASE_URL}/orchestrate/full`, {
     method: "POST",
@@ -32,16 +32,88 @@ export async function runFullOrchestration({
   return res.json();
 }
 
+/**
+ * Primer llamado al modo interactivo: arranca la sesión de QA
+ */
+export async function startInteractiveOrchestration({
+  sessionId,
+  userInput,
+  slots,
+  useKb = true,
+  debugFull = true
+}) {
+  const res = await fetch(`${API_BASE_URL}/orchestrate/interactive`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: sessionId,
+      user_input: userInput,
+      slots,
+      use_kb: useKb,
+      ask_mode: "interactive",
+      debug_full: debugFull
+    })
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Error ${res.status} al iniciar modo interactivo: ${res.statusText} ${text}`
+    );
+  }
+
+  return res.json();
+}
+
+/**
+ * Responder una pregunta del modo interactivo
+ */
+export async function answerInteractiveQuestion({
+  sessionId,
+  answerId,
+  answerText,
+  slotPatch = {}
+}) {
+  const res = await fetch(`${API_BASE_URL}/orchestrate/interactive`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: sessionId,
+      answer: { id: answerId, text: answerText },
+      slot_patch: slotPatch
+    })
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Error ${res.status} al responder pregunta: ${res.statusText} ${text}`
+    );
+  }
+
+  return res.json();
+}
+
 export function getPreviewUrl(sessionId) {
   const base = API_BASE_URL.replace(/\/+$/, "");
   return `${base}/preview?session_id=${encodeURIComponent(sessionId)}`;
 }
 
-export async function downloadFactibilidadDocx(sessionId, { apa = true } = {}) {
+/**
+ * apa:
+ *  - true  => formato APA (&apa=1)
+ *  - false => plantilla corporativa (sin &apa)
+ */
+export async function downloadFactibilidadDocx(
+  sessionId,
+  { apa = true } = {}
+) {
   const base = API_BASE_URL.replace(/\/+$/, "");
-  const url = `${base}/preview/docx?session_id=${encodeURIComponent(
-    sessionId
-  )}${apa ? "&apa=1" : ""}`;
+  let url = `${base}/preview/docx?session_id=${encodeURIComponent(sessionId)}`;
+
+  if (apa) {
+    url += "&apa=1";
+  }
 
   const res = await fetch(url);
   if (!res.ok) {
