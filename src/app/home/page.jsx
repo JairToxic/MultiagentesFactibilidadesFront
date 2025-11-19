@@ -4,6 +4,7 @@ import { useState } from "react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
+import FuturisticIntro from "../../../components/FuturisticIntro";
 import FactibilidadForm from "../../../components/FactibilidadForm";
 import {
   runFullOrchestration,
@@ -16,6 +17,9 @@ import {
 import styles from "../page.module.css";
 
 export default function HomePage() {
+  // Estado para controlar la intro
+  const [showIntro, setShowIntro] = useState(true);
+  
   const [running, setRunning] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
@@ -176,18 +180,18 @@ export default function HomePage() {
   const handleTour = () => {
     const d = driver({
       showProgress: true,
-      nextBtnText: "Siguiente",
-      prevBtnText: "Anterior",
-      doneBtnText: "Listo",
+      nextBtnText: "Siguiente →",
+      prevBtnText: "← Anterior",
+      doneBtnText: "✓ Finalizar",
       allowClose: true,
-      overlayOpacity: 0.75,
+      overlayOpacity: 0.85,
       steps: [
         {
           element: "#fact-form",
           popover: {
-            title: "Formulario de factibilidad",
+            title: "🎯 Formulario de Factibilidad",
             description:
-              "Aquí completas los datos clave del proyecto para que los agentes construyan todo el documento.",
+              "Configure todos los parámetros del proyecto para generar un análisis técnico completo y profesional.",
             side: "left",
             align: "start"
           }
@@ -195,9 +199,9 @@ export default function HomePage() {
         {
           element: "#field-session",
           popover: {
-            title: "Session ID",
+            title: "🔑 Session ID",
             description:
-              "Este ID te permite reutilizar y volver a generar la misma factibilidad cuantas veces quieras.",
+              "Identificador único que permite regenerar y mantener continuidad en sus análisis.",
             side: "bottom",
             align: "start"
           }
@@ -205,9 +209,9 @@ export default function HomePage() {
         {
           element: "#field-objective",
           popover: {
-            title: "Requerimiento del cliente",
+            title: "📝 Requerimiento del Cliente",
             description:
-              "Pega aquí el texto que recibiste del cliente. El agente de Normalize lo convierte en algo limpio y estructurado.",
+              "Nuestro agente Normalizer procesará automáticamente esta información para estructurar el análisis.",
             side: "top",
             align: "start"
           }
@@ -215,9 +219,9 @@ export default function HomePage() {
         {
           element: "#btn-generar",
           popover: {
-            title: "Generar factibilidad",
+            title: "🚀 Generar Factibilidad",
             description:
-              "Según las opciones avanzadas, se ejecutará full automático o modo interactivo con preguntas.",
+              "Inicie el proceso de análisis multiagente según la configuración seleccionada.",
             side: "top",
             align: "center"
           }
@@ -225,9 +229,9 @@ export default function HomePage() {
         {
           element: "#result-actions",
           popover: {
-            title: "Preview y descarga",
+            title: "📊 Resultados y Exportación",
             description:
-              "Cuando termine, podrás abrir la vista HTML y descargar el DOCX (APA o plantilla corporativa).",
+              "Acceda a la vista previa HTML y descargue el documento en formato DOCX.",
             side: "top",
             align: "center"
           }
@@ -242,13 +246,13 @@ export default function HomePage() {
 
   const describeConfig = () => {
     if (!lastConfig) return "";
-    const cat = lastConfig.useKb ? "Catálogo ON" : "Catálogo OFF";
-    const qa = lastConfig.generateQa ? "Preguntas QA ON" : "Preguntas QA OFF";
+    const cat = lastConfig.useKb ? "✓ Catálogo" : "✗ Catálogo";
+    const qa = lastConfig.generateQa ? "✓ QA Interactivo" : "✗ QA Interactivo";
     const docx =
       lastConfig.docxMode === "apa"
-        ? "DOCX APA"
-        : "DOCX plantilla corporativa";
-    return `${cat} · ${qa} · ${docx}`;
+        ? "📄 APA"
+        : "🏛️ Corporativo";
+    return `${cat}  |  ${qa}  |  ${docx}`;
   };
 
   const totalQuestions =
@@ -257,196 +261,278 @@ export default function HomePage() {
       : qaAnswered + qaPending;
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <div>
-            <h1 className={styles.title}>
-              Factibilidades técnicas con multiagentes
-            </h1>
-            <p className={styles.subtitle}>
-              Orquesta Normalizer, Products, Scope, Pricing y QA desde una
-              interfaz simple y lista para producción.
-            </p>
-          </div>
-
-          <div className={styles.headerActions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={handleTour}
-            >
-              Guíame por la pantalla
-            </button>
-          </div>
-        </header>
-
-        <section className={styles.layout}>
-          <div className={styles.leftColumn}>
-            <FactibilidadForm onSubmit={handleRun} isSubmitting={running} />
-          </div>
-
-          <div className={styles.rightColumn}>
-            <div className={styles.statusCard}>
-              <h2 className={styles.statusTitle}>Estado de la orquestación</h2>
-
-              {running && (
-                <div className={styles.statusBadgePulse}>
-                  Ejecutando agentes… Normalizer → Products → Scope → Pricing →
-                  QA
-                </div>
-              )}
-
-              {qaMode && currentQuestion && (
-                <div className={styles.qaBox}>
-                  <p className={styles.labelSm}>
-                    Pregunta {qaAnswered + 1} de {totalQuestions || "?"}
-                  </p>
-                  <p className={styles.qaQuestion}>
-                    {currentQuestion.text || "Pregunta sin texto"}
-                  </p>
-                  <textarea
-                    className={styles.qaTextarea}
-                    value={qaAnswer}
-                    onChange={(e) => setQaAnswer(e.target.value)}
-                    placeholder="Escribe tu respuesta para avanzar…"
-                  />
-                  <div className={styles.qaFooter}>
-                    <span className={styles.qaProgress}>
-                      Respondidas: {qaAnswered} · Pendientes: {qaPending}
-                    </span>
-                    <button
-                      type="button"
-                      className={styles.qaButton}
-                      onClick={handleAnswerQuestion}
-                      disabled={qaSending}
-                    >
-                      {qaSending ? (
-                        <>
-                          <span className={styles.loader}></span>
-                          <span>Enviando respuesta...</span>
-                        </>
-                      ) : (
-                        "Responder y continuar"
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {!running && !result && !qaMode && (
-                <div className={styles.statusEmpty}>
-                  <p>
-                    Completa el formulario de la izquierda y pulsa{" "}
-                    <strong>"Generar factibilidad"</strong> para ver el resumen
-                    aquí.
-                  </p>
-                </div>
-              )}
-
-              {error && <div className={styles.errorBox}>{error}</div>}
-
-              {result && (
-                <>
-                  <div className={styles.resultTop}>
-                    <div>
-                      <p className={styles.labelSm}>Session ID</p>
-                      <p className={styles.code}>{result.session_id}</p>
-                    </div>
-                    <div>
-                      <p className={styles.labelSm}>Proyecto</p>
-                      <p className={styles.resultText}>
-                        {result.slots?.project_name || "—"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className={styles.resultGrid}>
-                    <div>
-                      <p className={styles.labelSm}>Cliente / contacto</p>
-                      <p className={styles.resultText}>
-                        {result.slots?.client_name || "—"} ·{" "}
-                        {result.slots?.contact_email || "—"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={styles.labelSm}>Objetivo</p>
-                      <p className={styles.resultText}>
-                        {result.slots?.objective || "—"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className={styles.chipsRow}>
-                    {(result.agents_used ||
-                      result.steps?.map((s) => s.name) ||
-                      []
-                    ).map((name, idx) => (
-                      <span key={idx} className={styles.chip}>
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-
-                  {lastConfig && (
-                    <div className={styles.configRow}>
-                      <strong>Configuración usada:</strong> {describeConfig()}
-                    </div>
-                  )}
-
-                  <div
-                    className={styles.resultActions}
-                    id="result-actions"
-                  >
-                    {previewUrl && (
-                      <a
-                        href={previewUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={styles.primaryLink}
-                      >
-                        Ver preview HTML
-                      </a>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={handleDownloadDocx}
-                      className={styles.outlineButton}
-                      disabled={!sessionId || !lastConfig || downloading}
-                    >
-                      {downloading ? (
-                        <>
-                          <span className={styles.loader}></span>
-                          <span>Descargando DOCX...</span>
-                        </>
-                      ) : (
-                        "Descargar DOCX"
-                      )}
-                    </button>
-                  </div>
-
-                  <details className={styles.details}>
-                    <summary>Ver detalle de pasos (steps)</summary>
-                    <div className={styles.stepsList}>
-                      {(result.steps || []).map((step, idx) => (
-                        <div key={idx} className={styles.stepItem}>
-                          <p className={styles.stepTitle}>{step.name}</p>
-                          {step.answer_long && (
-                            <p className={styles.stepText}>
-                              {step.answer_long}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                </>
-              )}
+    <>
+      {/* ===== INTRO FUTURÍSTICA ===== */}
+      {showIntro && (
+        <FuturisticIntro onComplete={() => setShowIntro(false)} />
+      )}
+      
+      {/* ===== APLICACIÓN PRINCIPAL ===== */}
+      <main className={styles.main}>
+        <div className={styles.backgroundPattern}></div>
+        
+        <div className={styles.container}>
+          <header className={styles.header}>
+            <div className={styles.headerContent}>
+              <div className={styles.logoArea}>
+                <span className={styles.logo}>⚡</span>
+                <h1 className={styles.title}>
+                  Sistema de Factibilidad Técnica
+                </h1>
+              </div>
+              <p className={styles.subtitle}>
+                Análisis multiagente inteligente para evaluación exhaustiva de proyectos empresariales
+              </p>
             </div>
-          </div>
-        </section>
-      </div>
-    </main>
+
+            <div className={styles.headerActions}>
+              <button
+                type="button"
+                className={styles.tourButton}
+                onClick={handleTour}
+              >
+                <span className={styles.tourIcon}>🎯</span>
+                Tour Interactivo
+              </button>
+            </div>
+          </header>
+
+          <section className={styles.layout}>
+            <div className={styles.leftColumn}>
+              <FactibilidadForm onSubmit={handleRun} isSubmitting={running} />
+            </div>
+
+            <div className={styles.rightColumn}>
+              <div className={styles.statusCard}>
+                <div className={styles.statusHeader}>
+                  <h2 className={styles.statusTitle}>
+                    <span className={styles.statusIcon}>📡</span>
+                    Estado de Orquestación
+                  </h2>
+                  {running && (
+                    <span className={styles.statusIndicator}>
+                      <span className={styles.indicatorDot}></span>
+                      Procesando
+                    </span>
+                  )}
+                </div>
+
+                {running && (
+                  <div className={styles.processingBox}>
+                    <div className={styles.processingAnimation}>
+                      <div className={styles.processingCircle}></div>
+                      <div className={styles.processingCircle}></div>
+                      <div className={styles.processingCircle}></div>
+                    </div>
+                    <p className={styles.processingText}>
+                      Ejecutando pipeline de agentes especializados...
+                    </p>
+                    <div className={styles.agentFlow}>
+                      <span className={styles.agentStep}>Normalizer</span>
+                      <span className={styles.flowArrow}>→</span>
+                      <span className={styles.agentStep}>Products</span>
+                      <span className={styles.flowArrow}>→</span>
+                      <span className={styles.agentStep}>Scope</span>
+                      <span className={styles.flowArrow}>→</span>
+                      <span className={styles.agentStep}>Pricing</span>
+                      <span className={styles.flowArrow}>→</span>
+                      <span className={styles.agentStep}>QA</span>
+                    </div>
+                  </div>
+                )}
+
+                {qaMode && currentQuestion && (
+                  <div className={styles.qaBox}>
+                    <div className={styles.qaHeader}>
+                      <span className={styles.qaLabel}>
+                        Pregunta {qaAnswered + 1} de {totalQuestions || "?"}
+                      </span>
+                      <span className={styles.qaProgress}>
+                        <span className={styles.qaProgressBar} 
+                          style={{width: `${(qaAnswered / totalQuestions) * 100}%`}}></span>
+                      </span>
+                    </div>
+                    <p className={styles.qaQuestion}>
+                      {currentQuestion.text || "Pregunta sin texto"}
+                    </p>
+                    <textarea
+                      className={styles.qaTextarea}
+                      value={qaAnswer}
+                      onChange={(e) => setQaAnswer(e.target.value)}
+                      placeholder="Proporcione información detallada para continuar con el análisis..."
+                    />
+                    <div className={styles.qaFooter}>
+                      <span className={styles.qaStats}>
+                        ✓ {qaAnswered} respondidas  •  ⏳ {qaPending} pendientes
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.qaButton}
+                        onClick={handleAnswerQuestion}
+                        disabled={qaSending}
+                      >
+                        {qaSending ? (
+                          <>
+                            <span className={styles.spinner}></span>
+                            Procesando respuesta...
+                          </>
+                        ) : (
+                          <>
+                            <span>Continuar</span>
+                            <span className={styles.qaArrow}>→</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!running && !result && !qaMode && (
+                  <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>📋</div>
+                    <p className={styles.emptyText}>
+                      Configure los parámetros en el formulario y pulse{" "}
+                      <strong>"Generar Factibilidad"</strong> para iniciar el análisis multiagente.
+                    </p>
+                  </div>
+                )}
+
+                {error && (
+                  <div className={styles.errorBox}>
+                    <span className={styles.errorIcon}>⚠️</span>
+                    <div>
+                      <strong>Error en el proceso</strong>
+                      <p>{error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {result && (
+                  <>
+                    <div className={styles.resultCard}>
+                      <div className={styles.resultHeader}>
+                        <div className={styles.resultBadge}>
+                          <span className={styles.badgeIcon}>✓</span>
+                          Análisis Completado
+                        </div>
+                      </div>
+
+                      <div className={styles.resultGrid}>
+                        <div className={styles.resultItem}>
+                          <span className={styles.resultLabel}>Session ID</span>
+                          <code className={styles.resultCode}>{result.session_id}</code>
+                        </div>
+                        <div className={styles.resultItem}>
+                          <span className={styles.resultLabel}>Proyecto</span>
+                          <span className={styles.resultValue}>
+                            {result.slots?.project_name || "—"}
+                          </span>
+                        </div>
+                        <div className={styles.resultItem}>
+                          <span className={styles.resultLabel}>Cliente</span>
+                          <span className={styles.resultValue}>
+                            {result.slots?.client_name || "—"}
+                          </span>
+                        </div>
+                        <div className={styles.resultItem}>
+                          <span className={styles.resultLabel}>Contacto</span>
+                          <span className={styles.resultValue}>
+                            {result.slots?.contact_email || "—"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.objectiveBox}>
+                        <span className={styles.objectiveLabel}>Objetivo del Proyecto</span>
+                        <p className={styles.objectiveText}>
+                          {result.slots?.objective || "—"}
+                        </p>
+                      </div>
+
+                      <div className={styles.agentsUsed}>
+                        <span className={styles.agentsLabel}>Agentes Ejecutados</span>
+                        <div className={styles.agentsList}>
+                          {(result.agents_used ||
+                            result.steps?.map((s) => s.name) ||
+                            []
+                          ).map((name, idx) => (
+                            <span key={idx} className={styles.agentChip}>
+                              <span className={styles.agentDot}></span>
+                              {name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {lastConfig && (
+                        <div className={styles.configSummary}>
+                          <span className={styles.configLabel}>Configuración</span>
+                          <span className={styles.configValue}>{describeConfig()}</span>
+                        </div>
+                      )}
+
+                      <div className={styles.resultActions} id="result-actions">
+                        {previewUrl && (
+                          <a
+                            href={previewUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={styles.previewButton}
+                          >
+                            <span className={styles.buttonIcon}>👁️</span>
+                            Vista Previa HTML
+                          </a>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={handleDownloadDocx}
+                          className={styles.downloadButton}
+                          disabled={!sessionId || !lastConfig || downloading}
+                        >
+                          {downloading ? (
+                            <>
+                              <span className={styles.spinner}></span>
+                              Descargando...
+                            </>
+                          ) : (
+                            <>
+                              <span className={styles.buttonIcon}>⬇️</span>
+                              Descargar DOCX
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <details className={styles.details}>
+                        <summary className={styles.detailsSummary}>
+                          <span className={styles.summaryIcon}>▶</span>
+                          Detalle de Ejecución por Agente
+                        </summary>
+                        <div className={styles.stepsList}>
+                          {(result.steps || []).map((step, idx) => (
+                            <div key={idx} className={styles.stepCard}>
+                              <div className={styles.stepHeader}>
+                                <span className={styles.stepNumber}>{idx + 1}</span>
+                                <span className={styles.stepName}>{step.name}</span>
+                              </div>
+                              {step.answer_long && (
+                                <p className={styles.stepContent}>
+                                  {step.answer_long}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </>
   );
 }

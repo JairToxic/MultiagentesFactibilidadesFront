@@ -42,19 +42,30 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
 
   return (
     <form id="fact-form" className={styles.card} onSubmit={handleSubmit}>
+      <div className={styles.cardGlow}></div>
+      
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>Nueva factibilidad técnica</h2>
+          <h2 className={styles.cardTitle}>
+            <span className={styles.titleIcon}>📊</span>
+            Nueva Factibilidad Técnica
+          </h2>
           <p className={styles.cardSubtitle}>
-            Define los datos mínimos y genera el documento con un clic.
+            Configuración inteligente de análisis multiagente
           </p>
         </div>
-        <span className={styles.badge}>Multiagentes</span>
+        <span className={styles.badge}>
+          <span className={styles.badgeDot}></span>
+          Multiagentes
+        </span>
       </div>
 
       <div className={styles.grid}>
         <div className={styles.fieldGroup} id="field-session">
-          <label className={styles.label}>Session ID</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>🔑</span>
+            Session ID
+          </label>
           <input
             className={styles.input}
             value={sessionId}
@@ -62,35 +73,43 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
             required
           />
           <p className={styles.helpText}>
-            Usa el mismo ID si quieres regenerar la factibilidad para el mismo
-            caso.
+            Identificador único para mantener continuidad en regeneraciones
           </p>
         </div>
 
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>Nombre del proyecto</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>📁</span>
+            Nombre del Proyecto
+          </label>
           <input
             className={styles.input}
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             required
-            placeholder="Ej: Sistema de gestión empresarial"
+            placeholder="Ej: Sistema de Gestión Empresarial"
           />
         </div>
 
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>Cliente</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>🏢</span>
+            Cliente
+          </label>
           <input
             className={styles.input}
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
-            placeholder="Nombre de la empresa"
+            placeholder="Nombre de la organización"
           />
         </div>
 
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>Correo de contacto</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>✉️</span>
+            Contacto Principal
+          </label>
           <input
             type="email"
             className={styles.input}
@@ -102,7 +121,10 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
         </div>
 
         <div className={styles.fieldGroupSmall}>
-          <label className={styles.label}>Región</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>🌎</span>
+            Región
+          </label>
           <input
             className={styles.input}
             value={region}
@@ -112,7 +134,10 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
         </div>
 
         <div className={styles.fieldGroupSmall}>
-          <label className={styles.label}>Cantidad (ej. usuarios)</label>
+          <label className={styles.label}>
+            <span className={styles.labelIcon}>👥</span>
+            Cantidad
+          </label>
           <input
             type="number"
             min={1}
@@ -125,23 +150,26 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
 
       <div className={styles.fieldGroup} id="field-objective">
         <label className={styles.label}>
-          Descripción / Requerimiento del cliente
+          <span className={styles.labelIcon}>📝</span>
+          Descripción del Requerimiento
         </label>
         <textarea
           className={`${styles.input} ${styles.textarea}`}
           value={objective}
           onChange={(e) => setObjective(e.target.value)}
           required
-          placeholder="Describe aquí el requerimiento completo del cliente, incluyendo productos, servicios, alcance, región, cantidad de usuarios, etc."
+          placeholder="Describe el alcance, productos, servicios y necesidades específicas del cliente..."
         />
         <p className={styles.helpText}>
-          Aquí puedes pegar el texto que el cliente te envió (correo,
-          WhatsApp, etc.). El agente Normalizer lo procesará automáticamente.
+          El agente <strong>Normalizer</strong> procesará automáticamente esta información
         </p>
       </div>
 
       <div className={styles.advancedBox}>
-        <p className={styles.advancedTitle}>Opciones avanzadas</p>
+        <p className={styles.advancedTitle}>
+          <span className={styles.settingsIcon}>⚙️</span>
+          Configuración Avanzada
+        </p>
 
         <div className={styles.toggleRow}>
           <label className={styles.toggle}>
@@ -150,9 +178,8 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
               checked={useKb}
               onChange={(e) => setUseKb(e.target.checked)}
             />
-            <span className={styles.toggleLabelText}>
-              Usar catálogo de productos
-            </span>
+            <span className={styles.toggleSlider}></span>
+            <span className={styles.toggleLabelText}>Catálogo de Productos</span>
           </label>
 
           <label className={styles.toggle}>
@@ -161,14 +188,13 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
               checked={generateQa}
               onChange={(e) => setGenerateQa(e.target.checked)}
             />
-            <span className={styles.toggleLabelText}>
-              Habilitar preguntas de QA
-            </span>
+            <span className={styles.toggleSlider}></span>
+            <span className={styles.toggleLabelText}>Preguntas Interactivas</span>
           </label>
         </div>
 
         <div className={styles.docxModeRow}>
-          <span className={styles.toggleLabelText}>Formato DOCX:</span>
+          <span className={styles.docxLabel}>Formato de Salida:</span>
           <button
             type="button"
             className={`${styles.docxOption} ${
@@ -176,7 +202,8 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
             }`}
             onClick={() => setDocxMode("apa")}
           >
-            APA (sin plantilla)
+            <span className={styles.docxIcon}>📄</span>
+            APA Estándar
           </button>
           <button
             type="button"
@@ -185,7 +212,8 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
             }`}
             onClick={() => setDocxMode("corp")}
           >
-            Plantilla corporativa
+            <span className={styles.docxIcon}>🏛️</span>
+            Plantilla Corporativa
           </button>
         </div>
       </div>
@@ -199,16 +227,18 @@ export default function FactibilidadForm({ onSubmit, isSubmitting = false }) {
         >
           {isSubmitting ? (
             <>
-              <span className={styles.loader}></span>
-              <span>Generando factibilidad...</span>
+              <span className={styles.spinner}></span>
+              <span>Generando Factibilidad...</span>
             </>
           ) : (
-            "Generar factibilidad"
+            <>
+              <span className={styles.buttonIcon}>🚀</span>
+              <span>Generar Factibilidad</span>
+            </>
           )}
         </button>
         <span className={styles.actionsHint}>
-          Se ejecutarán los agentes de Normalize, Products, Scope, Pricing y QA
-          según las opciones seleccionadas.
+          Procesamiento automático: Normalize → Products → Scope → Pricing → QA
         </span>
       </div>
     </form>
