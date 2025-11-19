@@ -78,8 +78,6 @@
   gap: 20px;
 }
 
-/* Sections */
-
 .section {
   background: #ffffff;
   border-radius: 14px;
@@ -93,8 +91,6 @@
   color: #0f172a;
   margin-bottom: 12px;
 }
-
-/* Info grid */
 
 .infoGrid {
   display: grid;
@@ -130,8 +126,6 @@
   border-left: 3px solid #3b82f6;
 }
 
-/* Badges / clasificación */
-
 .badges {
   display: flex;
   flex-wrap: wrap;
@@ -157,8 +151,6 @@
   font-size: 14px;
   color: #0f172a;
 }
-
-/* Técnico asignado */
 
 .technicianCard {
   border-radius: 12px;
@@ -275,8 +267,6 @@
   font-size: 11px;
 }
 
-/* Alternativas */
-
 .alternatives {
   margin-top: 12px;
   border-top: 1px dashed #e5e7eb;
@@ -327,14 +317,13 @@
   color: #6b7280;
 }
 
-/* Historial de conversación */
-
+/* ✅ ARREGLADO: Historial de conversación */
 .thread {
   background: #f9fafb;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   padding: 10px 12px;
-  max-height: 260px;
+  max-height: 400px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -342,14 +331,16 @@
 }
 
 .message {
-  max-width: 80%;
-  padding: 8px 10px;
-  border-radius: 10px;
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.5;
   display: inline-flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .inbound {
@@ -380,14 +371,22 @@
   opacity: 0.8;
 }
 
+/* ✅ CRÍTICO: Arreglar el texto que se sale */
 .messageBody {
   font-size: 13px;
+  line-height: 1.6;
   margin: 0;
-white-space: pre-wrap;   /* 👈 clave: respeta \n y espacios */
-
 }
 
-/* Responder */
+.messageBody pre {
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;       /* ✅ Respeta saltos de línea */
+  word-wrap: break-word;       /* ✅ Rompe palabras largas */
+  overflow-wrap: break-word;   /* ✅ Alternativa moderna */
+  max-width: 100%;            /* ✅ No exceder el contenedor */
+  font-family: inherit;        /* ✅ Usar la fuente del resto */
+}
 
 .replyForm {
   display: flex;
@@ -466,7 +465,223 @@ white-space: pre-wrap;   /* 👈 clave: respeta \n y espacios */
   color: #64748b;
 }
 
-/* Responsive */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badgesRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.textarea:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.success {
+  color: #10b981;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.sendButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 28px;
+  border-bottom: 2px solid #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.activeTab {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+/* ✅ Timeline con fecha completa */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.timelineItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 21px;
+  top: 48px;
+  bottom: -20px;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.timelineIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.timelineContent {
+  flex: 1;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.timelineTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.timelineDescription {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+/* ✅ ARREGLADO: Mostrar fecha completa, no solo tiempo relativo */
+.timelineDate {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  display: block;
+  margin-top: 4px;
+}
+
+.noMessages {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.timelineUser {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: #eef2ff;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.userIcon {
+  font-size: 14px;
+}
+
+/* Grid para múltiples técnicos */
+.techniciansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .techniciansGrid {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
   .modal {
@@ -479,11 +694,11 @@ white-space: pre-wrap;   /* 👈 clave: respeta \n y espacios */
   }
 
   .thread {
-    max-height: 220px;
+    max-height: 300px;
   }
 
   .message {
-    max-width: 90%;
+    max-width: 95%;
   }
 
   .replyActions {

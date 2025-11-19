@@ -54,32 +54,52 @@
   font-family: 'Courier New', monospace;
 }
 
+/* ✅ COLORES MEJORADOS PARA ESTADOS */
 .statusBadge {
   display: inline-block;
-  padding: 4px 12px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 6px 14px;
   color: white;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  animation: pulse 2s infinite;
+  font-size: 13px;
+  font-weight: 700;
   width: fit-content;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
-
-.priority {
-  padding: 6px 16px;
-  border-radius: 20px;
-  color: white;
-  font-weight: 600;
-  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estados específicos con gradientes */
+.statusBadge[style*="#3b82f6"] {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+
+.statusBadge[style*="#f59e0b"] {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.statusBadge[style*="#10b981"] {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.statusBadge[style*="#6b7280"] {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+}
+
+.statusBadge[style*="#8b5cf6"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+}
+
+/* ✅ PRIORIDADES CON COLORES MÁS FUERTES */
+.priority {
+  padding: 8px 18px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
 }
 
 .content {
@@ -105,6 +125,7 @@
   font-size: 13px;
   color: #64748b;
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .summary {
@@ -124,17 +145,19 @@
 }
 
 .category, .product {
-  padding: 6px 14px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
   color: #4c1d95;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
 }
 
 .product {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #78350f;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
 }
 
 .footer {
@@ -162,6 +185,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
 }
 
 .avatar {
@@ -176,33 +200,86 @@
   font-weight: 700;
   font-size: 18px;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  flex-shrink: 0;
 }
 
 .techDetails {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .techName {
   font-weight: 600;
   color: #1e293b;
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .techScore {
   font-size: 12px;
   color: #64748b;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* ✅ BADGE DE ASIGNACIÓN CON COLORES DISTINTOS */
 .assignedBadge {
-  padding: 6px 14px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.unassigned {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;
+}
+
+/* Avatar group para múltiples técnicos */
+.avatarGroup {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.avatarSmall {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  border: 3px solid white;
+  margin-left: -10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.avatarSmall:first-child {
+  margin-left: 0;
+}
+
+.avatarSmall:hover {
+  transform: scale(1.1) translateY(-2px);
+  z-index: 10 !important;
 }
 
 .timestamp {
@@ -211,6 +288,7 @@
   color: #94a3b8;
   text-align: right;
   font-style: italic;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
@@ -226,5 +304,15 @@
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+  }
+
+  .assignedBadge {
+    align-self: flex-start;
+  }
+
+  .avatarSmall {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 }

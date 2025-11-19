@@ -1,0 +1,107 @@
+/* components/analytics/TrendAnalysis.module.css */
+.container {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 20px;
+}
+
+.trendBox {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.trendValue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.positive {
+  color: #10b981;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.trendIcon {
+  font-size: 40px;
+}
+
+.trendPercent {
+  font-size: 48px;
+}
+
+.trendLabel {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.comparison {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 2px solid #f1f5f9;
+  border-bottom: 2px solid #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.comparisonItem {
+  text-align: center;
+}
+
+.comparisonValue {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.comparisonLabel {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.comparisonDivider {
+  font-size: 18px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.insight {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.insightIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.insightText {
+  font-size: 13px;
+  color: #1e3a8a;
+  line-height: 1.6;
+}

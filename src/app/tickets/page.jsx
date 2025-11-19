@@ -1,71 +1,40 @@
 // app/tickets/page.jsx
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 import styles from "./page.module.css";
-import TicketList from "../../../components/TicketList";
+import Sidebar from "../../../components/layout/Sidebar";
+import Header from "../../../components/layout/Header";
+import TicketList from "../../../components/tickets/TicketList";
+import TicketDetail from "../../../components/tickets/TicketDetail";
 import ticketsService from "../../../services/ticketsService";
-import TicketDetail from "../../../components/TicketDetail";
+import TicketFilters from "../../../components/tickets/TicketFilters";
+import { useTickets } from "../../../hooks/useTickets";
+import { useFilters } from "../../../hooks/useFilters";
 
 export default function TicketsPage() {
-  // 🔐 Sesión de NextAuth
   const { data: session, status } = useSession();
-
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState("");
 
-  // ============================
-  //  Cargar tickets
-  // ============================
-  const loadTickets = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await ticketsService.getAllTickets();
+  const { tickets, loading, error, refreshTickets } = useTickets();
+  const { filters, filteredTickets, updateFilter, resetFilters } =
+    useFilters(tickets);
 
-      // Ordenar por fecha más reciente
-      const sortedTickets = data.tickets.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-
-      setTickets(sortedTickets);
-      setError(null);
-      setLastUpdate(new Date().toLocaleTimeString("es-EC"));
-    } catch (err) {
-      setError(err.message);
-      console.error("Error loading tickets:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Cargar tickets al montar (solo cuando ya hay sesión)
+  // Polling automático
   useEffect(() => {
-    if (!session) return; // no intentes cargar si no hay usuario
-    loadTickets();
-  }, [loadTickets, session]);
+    if (!session || !autoRefresh) return;
 
-  // Polling automático (solo si hay sesión y autoRefresh está ON)
-  useEffect(() => {
-    if (!session) return;
-    if (!autoRefresh) return;
-
-    const stopPolling = ticketsService.startPolling((data) => {
-      const sortedTickets = data.tickets.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-      setTickets(sortedTickets);
-      setLastUpdate(new Date().toLocaleTimeString("es-EC"));
+    const stopPolling = ticketsService.startPolling(() => {
+      // El polling real se maneja en el hook useTickets si lo deseas
+      refreshTickets();
     }, 5000);
 
     return stopPolling;
-  }, [autoRefresh, session]);
+  }, [autoRefresh, session, refreshTickets]);
 
-  // Abrir modal de detalle
   const handleTicketClick = async (ticket) => {
     try {
       const fullTicket = await ticketsService.getTicketById(ticket.ticket_id);
@@ -76,130 +45,136 @@ export default function TicketsPage() {
     }
   };
 
-  // Cerrar modal
-  const handleCloseDetail = () => {
+  const handleCloseDetail = async () => {
     setSelectedTicket(null);
+    await refreshTickets();
   };
 
-  // Refrescar manualmente
-  const handleRefresh = () => {
-    loadTickets();
+  const handleTicketUpdate = async () => {
+    if (selectedTicket) {
+      try {
+        const updatedTicket = await ticketsService.getTicketById(
+          selectedTicket.ticket_id
+        );
+        setSelectedTicket(updatedTicket);
+      } catch (error) {
+        console.error("Error updating ticket:", error);
+      }
+    }
+    await refreshTickets();
   };
 
-  // ============================
-  //  RENDER CONDICIONAL (después de TODOS los hooks)
-  // ============================
+  // Calcular counts para filtros
+  const ticketCounts = {
+    total: tickets.length,
+    nuevo: tickets.filter((t) => t.status === "nuevo").length,
+    en_progreso: tickets.filter((t) => t.status === "en_progreso").length,
+    resuelto: tickets.filter((t) => t.status === "resuelto").length,
+    cerrado: tickets.filter((t) => t.status === "cerrado").length,
+  };
 
-  // Mientras NextAuth está resolviendo si hay sesión o no
+  // Loading auth
   if (status === "loading") {
     return (
-      <div className={styles.page}>
-        <div className={styles.center}>
-          <p>Cargando sesión...</p>
-        </div>
+      <div className={styles.loading}>
+        <div className={styles.spinner}></div>
+        <p>Cargando...</p>
       </div>
     );
   }
 
-  // Si NO está autenticado → mostramos pantalla de login
+  // No autenticado
   if (!session) {
     return (
-      <div className={styles.page}>
-        <div className={styles.loginContainer}>
-          <h1 className={styles.title}>🎫 Sistema de Tickets</h1>
-          <p className={styles.subtitle}>
-            Inicia sesión con tu cuenta corporativa para gestionar tickets.
-          </p>
-
+      <div className={styles.loginPage}>
+        <div className={styles.loginCard}>
+          <div className={styles.loginHeader}>
+            <span className={styles.loginIcon}>🎫</span>
+            <h1 className={styles.loginTitle}>Sistema de Tickets</h1>
+            <p className={styles.loginSubtitle}>
+              Gestión inteligente de tickets con asignación automática
+            </p>
+          </div>
           <button
             className={styles.loginButton}
             onClick={() => signIn("azure-ad")}
           >
+            <span className={styles.msIcon}>🔐</span>
             Iniciar sesión con Microsoft
           </button>
+          <p className={styles.loginFooter}>
+            Inicia sesión con tu cuenta corporativa de Inova Solutions
+          </p>
         </div>
       </div>
     );
   }
 
-  // Usuario autenticado → UI normal de tickets
+  // Usuario autenticado
   return (
     <div className={styles.page}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <div className={styles.titleSection}>
-            <h1 className={styles.title}>🎫 Sistema de Tickets</h1>
-            <p className={styles.subtitle}>
-              Gestión automática de tickets con asignación inteligente
-            </p>
-          </div>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-          <div className={styles.headerRight}>
-            {/* Info de usuario logueado */}
-            <div className={styles.userInfo}>
-              <span className={styles.userName}>
-                {session.user?.name || "Usuario"}
-              </span>
-              <span className={styles.userEmail}>{session.user?.email}</span>
-            </div>
+      <div className={styles.main}>
+        <Header
+          title="🎫 Tickets"
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
-            {/* Botones de control */}
-            <div className={styles.controls}>
+        <div className={styles.content}>
+          <div className={styles.controls}>
+            <div className={styles.controlsLeft}>
               <button
                 className={styles.refreshBtn}
-                onClick={handleRefresh}
+                onClick={refreshTickets}
                 disabled={loading}
               >
                 <span className={loading ? styles.spinning : ""}>🔄</span>
                 Refrescar
               </button>
 
-              <label className={styles.toggleSwitch}>
+              <label className={styles.toggle}>
                 <input
                   type="checkbox"
                   checked={autoRefresh}
                   onChange={(e) => setAutoRefresh(e.target.checked)}
                 />
-                <span className={styles.slider}></span>
+                <span className={styles.toggleSlider}></span>
                 <span className={styles.toggleLabel}>
                   Auto-refresh {autoRefresh ? "ON" : "OFF"}
                 </span>
               </label>
+            </div>
 
-              <button
-                className={styles.logoutButton}
-                onClick={() => signOut()}
-              >
-                Cerrar sesión
-              </button>
+            <div className={styles.resultsInfo}>
+              Mostrando {filteredTickets.length} de {tickets.length} tickets
             </div>
           </div>
+
+          <TicketFilters
+            filters={filters}
+            onFilterChange={updateFilter}
+            onReset={resetFilters}
+            ticketCounts={ticketCounts}
+            tickets={tickets}
+          />
+
+          <TicketList
+            tickets={filteredTickets}
+            loading={loading}
+            error={error}
+            onTicketClick={handleTicketClick}
+          />
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className={styles.main}>
-        <TicketList
-          tickets={tickets}
-          loading={loading}
-          error={error}
-          onTicketClick={handleTicketClick}
-        />
-      </main>
-
-      {/* Modal de detalles */}
       {selectedTicket && (
-        <TicketDetail ticket={selectedTicket} onClose={handleCloseDetail} />
+        <TicketDetail
+          ticket={selectedTicket}
+          onClose={handleCloseDetail}
+          onUpdate={handleTicketUpdate}
+        />
       )}
-
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <p>
-          Tickets en tiempo real
-          {lastUpdate && ` • Última actualización: ${lastUpdate}`}
-        </p>
-      </footer>
     </div>
   );
 }

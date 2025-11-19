@@ -1,0 +1,158 @@
+// components/analytics/TicketVolumeChart.jsx
+import React from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import styles from './Chart.module.css';
+
+const normalizeNumber = (value) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+};
+
+// para nombres bonitos en la leyenda
+const getNiceLabel = (key) => {
+  const k = key.toLowerCase();
+  if (k.includes('created') || k.includes('creado')) return 'Creados';
+  if (k.includes('resolved') || k.includes('resuelto')) return 'Resueltos';
+  if (k.includes('closed') || k.includes('cerrado')) return 'Cerrados';
+  return key;
+};
+
+// colores base para las series
+const COLORS = ['#3b82f6', '#10b981', '#6b7280', '#f59e0b', '#8b5cf6'];
+
+const TicketVolumeChart = ({ data }) => {
+  let rows = [];
+
+  // Caso A: ya es un array de filas
+  if (Array.isArray(data)) {
+    rows = data.map((item) => {
+      if (!item || typeof item !== 'object') return null;
+
+      // si tiene solo date + un objeto anidado, lo aplanamos
+      const { date, label, day, dia, ...rest } = item;
+      const baseDate = date || label || day || dia || '';
+
+      // si alguno de los rest es objeto (counts, values, etc), lo mezclamos
+      let flat = {};
+      Object.entries(rest).forEach(([k, v]) => {
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          Object.entries(v).forEach(([subK, subV]) => {
+            flat[`${subK}`] = normalizeNumber(subV);
+          });
+        } else {
+          flat[k] = normalizeNumber(v);
+        }
+      });
+
+      return { date: baseDate, ...flat };
+    }).filter(Boolean);
+  }
+  // Caso B: estructura tipo { labels: [], serie1: [], serie2: [] }
+  else if (data && typeof data === 'object' && Array.isArray(data.labels)) {
+    const labels = data.labels;
+    const seriesKeys = Object.keys(data).filter(
+      (k) => k !== 'labels' && Array.isArray(data[k])
+    );
+
+    rows = labels.map((label, index) => {
+      const row = { date: label };
+      seriesKeys.forEach((k) => {
+        row[k] = normalizeNumber(data[k][index]);
+      });
+      return row;
+    });
+  }
+  // Caso C: objeto tipo { '2025-11-18': { created, resolved, closed }, ... }
+  else if (data && typeof data === 'object') {
+    rows = Object.entries(data).map(([dateKey, v]) => {
+      if (v && typeof v === 'object') {
+        const flat = {};
+        Object.entries(v).forEach(([k, value]) => {
+          flat[k] = normalizeNumber(value);
+        });
+        return { date: dateKey, ...flat };
+      }
+      return { date: dateKey, value: normalizeNumber(v) };
+    });
+  }
+
+  // Filtrar filas sin fecha
+  rows = rows.filter((r) => r && r.date);
+
+  if (!rows.length) {
+    return (
+      <div className={styles.chartContainer}>
+        <h3 className={styles.chartTitle}>📊 Volumen de tickets por día</h3>
+        <p style={{ textAlign: 'center', padding: '1rem 0' }}>
+          No hay datos disponibles para mostrar.
+        </p>
+      </div>
+    );
+  }
+
+  // Detectar qué keys son series (todas menos "date")
+  const sample = rows[0] || {};
+  const seriesKeys = Object.keys(sample).filter(
+    (k) => k !== 'date' && sample[k] !== undefined
+  );
+
+  if (!seriesKeys.length) {
+    return (
+      <div className={styles.chartContainer}>
+        <h3 className={styles.chartTitle}>📊 Volumen de tickets por día</h3>
+        <p style={{ textAlign: 'center', padding: '1rem 0' }}>
+          No se encontraron series numéricas para graficar.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.chartContainer}>
+      <h3 className={styles.chartTitle}>📊 Volumen de tickets por día</h3>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart data={rows}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis
+            dataKey="date"
+            stroke="#64748b"
+            style={{ fontSize: '12px' }}
+          />
+          <YAxis stroke="#64748b" style={{ fontSize: '12px' }} />
+          <Tooltip
+            labelFormatter={(label) => `Fecha: ${label}`}
+            contentStyle={{
+              backgroundColor: 'white',
+              border: '2px solid #e2e8f0',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+            formatter={(value, name) => [value, getNiceLabel(name)]}
+          />
+          <Legend formatter={(value) => getNiceLabel(value)} />
+
+          {seriesKeys.map((key, index) => (
+            <Bar
+              key={key}
+              dataKey={key}
+              name={getNiceLabel(key)}
+              fill={COLORS[index % COLORS.length]}
+              radius={[8, 8, 0, 0]}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export default TicketVolumeChart;

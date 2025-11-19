@@ -1,0 +1,123 @@
+/* components/common/Modal.module.css */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.small {
+  width: 90%;
+  max-width: 400px;
+}
+
+.medium {
+  width: 90%;
+  max-width: 600px;
+}
+
+.large {
+  width: 90%;
+  max-width: 900px;
+}
+
+.full {
+  width: 95%;
+  max-width: 1200px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background: #e2e8f0;
+  transform: rotate(90deg);
+}
+
+.header {
+  padding: 24px 28px 20px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  padding-right: 40px;
+}
+
+.content {
+  padding: 24px 28px;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 95% !important;
+    max-width: none !important;
+    max-height: 95vh;
+  }
+
+  .header {
+    padding: 20px 24px 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .content {
+    padding: 20px 24px;
+  }
+}

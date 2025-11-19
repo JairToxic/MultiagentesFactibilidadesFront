@@ -1,0 +1,92 @@
+/* components/common/Button.module.css */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variants */
+.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.secondary {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+.secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.danger {
+  background: #dc2626;
+  color: white;
+}
+
+.danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.ghost {
+  background: transparent;
+  color: #667eea;
+}
+
+.ghost:hover:not(:disabled) {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* Sizes */
+.small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.large {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.icon {
+  font-size: 18px;
+}

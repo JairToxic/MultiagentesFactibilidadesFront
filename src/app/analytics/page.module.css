@@ -1,4 +1,4 @@
-/* app/dashboard/page.module.css */
+/* app/analytics/page.module.css */
 .page {
   min-height: 100vh;
   display: flex;
@@ -41,11 +41,53 @@
   to { transform: rotate(360deg); }
 }
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
+.controls {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
   margin-bottom: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.controlsLeft {
+  flex: 1;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.controlsRight {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 20px;
 }
 
 .chartsGrid {
@@ -63,35 +105,6 @@
   grid-column: span 1;
 }
 
-.additionalStats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-.statBox {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.statBox h4 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-}
-
-.statValue {
-  font-size: 32px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
 @media (max-width: 1024px) {
   .main {
     margin-left: 0;
@@ -99,6 +112,15 @@
 
   .content {
     padding: 20px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controlsRight {
+    flex-wrap: wrap;
   }
 
   .chartsGrid {
@@ -115,11 +137,7 @@
     padding: 16px;
   }
 
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .additionalStats {
-    grid-template-columns: 1fr;
+  .pageTitle {
+    font-size: 22px;
   }
 }
