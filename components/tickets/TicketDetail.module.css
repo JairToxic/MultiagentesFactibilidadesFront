@@ -79,14 +79,40 @@
 }
 
 .section {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 18px 20px;
+  background: linear-gradient(to bottom, #ffffff, #f8fafc);
+  border-radius: 16px;
+  padding: 24px;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.section:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.section:hover::before {
+  opacity: 1;
 }
 
 .sectionTitle {
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 12px;
@@ -549,7 +575,7 @@
 }
 
 .tab {
-  padding: 12px 20px;
+  padding: 14px 24px;
   border: none;
   background: transparent;
   color: #64748b;
@@ -557,17 +583,32 @@
   font-size: 14px;
   cursor: pointer;
   border-bottom: 3px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: 8px 8px 0 0;
 }
 
 .tab:hover {
-  color: #0f172a;
-  background: #f8fafc;
+  color: #667eea;
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
 }
 
 .activeTab {
   color: #667eea;
   border-bottom-color: #667eea;
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  font-weight: 700;
+}
+
+.activeTab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px 2px 0 0;
 }
 
 /* ✅ Timeline con fecha completa */
@@ -683,6 +724,29 @@
   }
 }
 
+.assignmentsSection {
+  width: 100%;
+}
+
+.assignmentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.assignmentsHeader .sectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 @media (max-width: 768px) {
   .modal {
     padding: 16px 16px 20px;
@@ -709,5 +773,11 @@
   .replyButton {
     width: 100%;
     text-align: center;
+  }
+
+  .assignmentsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 }

@@ -2,6 +2,7 @@
 import React from 'react';
 import styles from './TicketCard.module.css';
 import ticketsService from '../../services/ticketsService';
+import AssignmentsDisplay from './AssignmentsDisplay';
 
 // Helper para normalizar assignment_json
 const getAssignmentFromTicket = (ticket) => {

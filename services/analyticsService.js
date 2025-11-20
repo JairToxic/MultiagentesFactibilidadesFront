@@ -1,5 +1,32 @@
 // services/analyticsService.js
+import statisticsService from './statisticsService';
+
 const analyticsService = {
+  // Nueva función para obtener estadísticas del backend
+  async getBackendStatistics(params = {}) {
+    try {
+      const [overview, byUser, timeTracking] = await Promise.all([
+        statisticsService.getOverview(params),
+        statisticsService.getStatisticsByUser(params),
+        statisticsService.getTimeTrackingStats(params),
+      ]);
+
+      return {
+        overview,
+        byUser: byUser.statistics || [],
+        timeTracking,
+      };
+    } catch (error) {
+      console.error('Error fetching backend statistics:', error);
+      return {
+        overview: null,
+        byUser: [],
+        timeTracking: null,
+      };
+    }
+  },
+
+  // Función original para cálculos en el frontend (mantener compatibilidad)
   calculateAnalytics(tickets = [], days = 7) {
     const now = new Date();
     const since = new Date();

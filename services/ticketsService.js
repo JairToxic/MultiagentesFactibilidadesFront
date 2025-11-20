@@ -37,10 +37,19 @@ class TicketsService {
   // ==================== ASIGNACIÓN DE TÉCNICOS ====================
 
   async assignTechnician(ticketId, technicianId, changedBy = 'system') {
-    const response = await api.patch(`/tickets/${ticketId}/assign`, {
-      technician_id: technicianId,
+    // Si technicianId es null, enviamos null explícitamente para desasignar
+    const payload = {
       changed_by: changedBy,
-    });
+    };
+    
+    // Solo agregar technician_id si no es null (para permitir desasignar)
+    if (technicianId !== null && technicianId !== undefined) {
+      payload.technician_id = technicianId;
+    } else {
+      payload.technician_id = null; // Explícitamente null para desasignar
+    }
+    
+    const response = await api.patch(`/tickets/${ticketId}/assign`, payload);
     return response.data;
   }
 

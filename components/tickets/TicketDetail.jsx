@@ -5,6 +5,9 @@ import styles from "./TicketDetail.module.css";
 import ticketsService from "../../services/ticketsService";
 import StatusSelector from "./StatusSelector";
 import TechnicianSelector from "./TechnicianSelector";
+import TimeTracking from "./TimeTracking";
+import SatisfactionSurvey from "./SatisfactionSurvey";
+import AssignmentsDisplay from "./AssignmentsDisplay";
 import toast from "react-hot-toast";
 
 const TicketDetail = ({ ticket, onClose, onUpdate }) => {
@@ -17,17 +20,33 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
 
   const [activeTab, setActiveTab] = useState("details");
 
+  const getTechniciansFromAssignment = (rawAssignment) => {
+    if (!rawAssignment) return [];
+
+    let assignment = rawAssignment;
+    if (typeof assignment === "string") {
+      try {
+        assignment = JSON.parse(rawAssignment);
+      } catch (err) {
+        console.error("No se pudo parsear assignment_json", err, rawAssignment);
+        return [];
+      }
+    }
+
+    const technicians = assignment.technicians || [];
+    if (technicians.length > 0) return technicians;
+
+    if (assignment.technician) {
+      return [assignment.technician];
+    }
+
+    return [];
+  };
+
   useEffect(() => {
     setCurrentStatus(ticket.status);
-    
     const assignment = ticket.assignment_json || ticket.assignment || {};
-    const technicians = assignment.technicians || [];
-    
-    if (!technicians.length && assignment.technician) {
-      setCurrentTechnicians([assignment.technician]);
-    } else {
-      setCurrentTechnicians(technicians);
-    }
+    setCurrentTechnicians(getTechniciansFromAssignment(assignment));
   }, [ticket]);
 
   if (!ticket) return null;
@@ -103,6 +122,7 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
       let result;
 
       if (action === 'unassign_all') {
+        // Para desasignar todos, enviamos null explícitamente
         result = await ticketsService.assignTechnician(
           ticket.ticket_id,
           null,
@@ -125,22 +145,10 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
       if (result.ticket) {
         Object.assign(ticket, result.ticket);
         const assignment = result.ticket.assignment_json || result.ticket.assignment || {};
-        const technicians = assignment.technicians || [];
-        
-        if (!technicians.length && assignment.technician) {
-          setCurrentTechnicians([assignment.technician]);
-        } else {
-          setCurrentTechnicians(technicians);
-        }
+        setCurrentTechnicians(getTechniciansFromAssignment(assignment));
       } else if (result.assignment) {
         ticket.assignment_json = result.assignment;
-        const technicians = result.assignment.technicians || [];
-        
-        if (!technicians.length && result.assignment.technician) {
-          setCurrentTechnicians([result.assignment.technician]);
-        } else {
-          setCurrentTechnicians(technicians);
-        }
+        setCurrentTechnicians(getTechniciansFromAssignment(result.assignment));
       }
 
       if (onUpdate) {
@@ -315,6 +323,30 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
           >
             🕐 Trazabilidad
           </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "time" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("time")}
+          >
+            ⏱️ Tiempo
+          </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "satisfaction" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("satisfaction")}
+          >
+            ⭐ Satisfacción
+          </button>
+          <button
+            className={`${styles.tab} ${
+              activeTab === "assignments" ? styles.activeTab : ""
+            }`}
+            onClick={() => setActiveTab("assignments")}
+          >
+            👥 Técnicos ({currentTechnicians.length})
+          </button>
         </div>
 
         <div className={styles.modalContent}>
@@ -381,63 +413,9 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
                 </div>
               </section>
 
-              {isAssigned && (
-                <section className={styles.section}>
-                  <h3 className={styles.sectionTitle}>
-                    👥 Técnicos asignados ({currentTechnicians.length})
-                  </h3>
-                  <div className={styles.techniciansGrid}>
-                    {currentTechnicians.map((tech, idx) => (
-                      <div key={tech.id || idx} className={styles.technicianCard}>
-                        <div className={styles.technicianHeader}>
-                          <div className={styles.techAvatar}>
-                            {tech.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .slice(0, 2)}
-                          </div>
-
-                          <div className={styles.techInfo}>
-                            <h4>{tech.name}</h4>
-                            <p className={styles.techId}>{tech.id}</p>
-                          </div>
-
-                          <div className={styles.scoreBox}>
-                            <div className={styles.scoreLabel}>Match Score</div>
-                            <div className={styles.scoreValue}>
-                              {tech.reranker_score
-                                ? `${(
-                                    (tech.reranker_score * 100) /
-                                    3
-                                  ).toFixed(0)}%`
-                                : "—"}
-                            </div>
-                          </div>
-                        </div>
-
-                        {tech.profile_summary && (
-                          <div className={styles.profileSummary}>
-                            <strong>Perfil:</strong>
-                            <p>{tech.profile_summary}</p>
-                          </div>
-                        )}
-
-                        {tech.skills && tech.skills.length > 0 && (
-                          <div className={styles.skillsSection}>
-                            <strong>Habilidades:</strong>
-                            <ul className={styles.skillsList}>
-                              {tech.skills.map((skill, idx) => (
-                                <li key={idx}>{skill}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+              <section className={styles.section}>
+                <AssignmentsDisplay technicians={currentTechnicians} />
+              </section>
             </>
           )}
 
@@ -517,6 +495,44 @@ const TicketDetail = ({ ticket, onClose, onUpdate }) => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </section>
+          )}
+
+          {activeTab === "time" && (
+            <section className={styles.section}>
+              <TimeTracking
+                ticketId={ticket.id}
+                userId={session?.user?.id || session?.user?.email}
+                onUpdate={onUpdate}
+              />
+            </section>
+          )}
+
+          {activeTab === "satisfaction" && (
+            <section className={styles.section}>
+              <SatisfactionSurvey
+                ticketId={ticket.id}
+                customerEmail={ticket.email?.from || ticket.requester_email}
+                onUpdate={onUpdate}
+              />
+            </section>
+          )}
+
+          {activeTab === "assignments" && (
+            <section className={styles.section}>
+              <div className={styles.assignmentsSection}>
+                <div className={styles.assignmentsHeader}>
+                  <h3 className={styles.sectionTitle}>
+                    👥 Técnicos Asignados ({currentTechnicians.length})
+                  </h3>
+                  <TechnicianSelector
+                    ticketId={ticket.ticket_id}
+                    currentTechnicians={currentTechnicians}
+                    onTechnicianChange={handleTechnicianChange}
+                  />
+                </div>
+                <AssignmentsDisplay technicians={currentTechnicians} />
               </div>
             </section>
           )}
